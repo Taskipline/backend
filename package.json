@@ -1,0 +1,39 @@
+{
+  "name": "taskipline-backend",
+  "version": "1.0.0",
+  "description": "Backend service for taskipline",
+  "keywords": [
+    "backend",
+    "nodejs",
+    "mongodb",
+    "express",
+    "typescript",
+    "taskipline"
+  ],
+  "homepage": "https://github.com/Taskipline/backend#readme",
+  "bugs": {
+    "url": "https://github.com/Taskipline/backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taskipline/backend.git"
+  },
+  "license": "ISC",
+  "author": "Emmy-Akintz",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "test"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
