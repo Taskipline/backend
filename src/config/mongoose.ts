@@ -1,6 +1,7 @@
 import { connect, set } from "mongoose";
+import { validateEnv } from "./env.config";
 
-const { MONGO_DB_URI } = process.env;
+const { MONGO_DB_URI } = validateEnv();
 
 // connection to db
 export const connectToDB = async () => {
