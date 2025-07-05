@@ -1,2 +1,3 @@
 node_modules
 .to-do.ts
+.env
