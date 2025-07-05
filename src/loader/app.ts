@@ -10,14 +10,12 @@ import {
   notFoundMiddleware,
   errorHandlerMiddleware,
 } from "../middleware/index.middleware";
-import ExpressMongoSanitize from "express-mongo-sanitize";
 import { corsOptions } from "../config/corsOptions";
 import { errorHandler, successHandler } from "../config/morgan";
 config();
 export const bootstrapExpress = (app: any) => {
   app.use(successHandler);
   app.use(errorHandler);
-  app.use(ExpressMongoSanitize());
   app.use(morgan("dev"));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
