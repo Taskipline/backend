@@ -38,3 +38,7 @@ Taskipline is a discipline-focused productivity platform that unifies tasks, cal
    ```bash
    npm run dev
    ```
+
+5. **API Documentation:**
+
+   The API documentation is available at `/api-docs` when the server is running.

@@ -1,30 +1,22 @@
-import globals from "globals";
-import tseslint from "@typescript-eslint/eslint-plugin";
-import js from "@eslint/js";
+const globals = require("globals");
+const tseslint = require("typescript-eslint");
+const js = require("@eslint/js");
 
-module.exports = [
-    // Global ignores
+module.exports = tseslint.config(
+    js.configs.recommended,
+    ...tseslint.configs.recommended,
     {
         ignores: ["dist/", "node_modules/"],
     },
-
-    // Base recommended configuration from ESLint
-    js.configs.recommended,
-
-    // TypeScript recommended configurations
-    ...tseslint.configs.recommended,
-
-    // Custom configuration for your project
     {
-        files: ["**/*.ts"], // Apply these rules to all TypeScript files
+        files: ["**/*.ts"],
         languageOptions: {
             globals: {
-                ...globals.node, // Globals for Node.js environment
-                ...globals.jest, // Globals for Jest tests
+                ...globals.node,
+                ...globals.jest,
             },
         },
         rules: {
-            // You can add any custom rules here in the future
         },
     },
-];
+);

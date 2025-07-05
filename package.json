@@ -34,6 +34,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -43,6 +45,8 @@
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.10",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0",
     "zod": "^3.25.71"
   },
