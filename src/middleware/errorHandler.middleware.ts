@@ -6,23 +6,24 @@ const errorHandlerMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const defaultError = {
     statusCode: err.statusCode || 500,
     msg: err.message || "Something went wrong, try again later",
   };
   if (err instanceof CustomAPIError) {
-    return res
+    res
       .status(defaultError.statusCode)
       .json({ message: defaultError.msg, success: false });
+    return;
   }
   if (err.name === "ValidationError") {
     defaultError.statusCode = 500;
     defaultError.msg = Object.values(err.errors)
-      .map((item: { message: string }) => item?.message)
+      .map((item: any) => item?.message)
       .join(",");
   }
-  if ((err.name = "CastError")) {
+  if (err.name === "CastError") {
     defaultError.statusCode = 400;
     defaultError.msg = `Resource not found. Invalid :${err.path}`;
   }

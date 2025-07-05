@@ -7,8 +7,20 @@
         "sourceMap": true,
         "outDir": "dist",
         "allowJs": true,
+        "strict": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
     },
     "lib": [
         "es2015"
+    ],
+    "include": [
+        "src/**/*",
+        "index.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

@@ -9,9 +9,11 @@ export const connectToDB = async () => {
     set("strictQuery", false);
     const db = await connect(MONGO_DB_URI);
     console.log("MongoDB connected to", db.connection.name);
+    return true;
     // Emit an event when the connection is successful
   } catch (error) {
-    console.error(error);
-    // Emit an event when there's an error
+    console.error("MongoDB connection failed:", error);
+    // Don't throw the error, just log it and return false
+    return false;
   }
 };

@@ -23,14 +23,11 @@ export const validateEnv = () => {
       },
     };
   } catch (error) {
-    let message = undefined;
     if (error instanceof ZodError) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      message = error.errors;
       console.error("Validation failed:", error.errors);
     } else {
-      // message = error;
       console.error("Error parsing environment variables:", error);
     }
+    throw error; // Re-throw to ensure calling code knows validation failed
   }
 };

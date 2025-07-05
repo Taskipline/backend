@@ -7,23 +7,14 @@ import {
   signUpSubscriber,
   forgetPasswordSubscriber,
 } from "../subscriber/auth.subscriber";
-import { Express } from "express";
+import { Application, Express } from "express";
 
 export const bootstrap = async (app: Express) => {
   validateEnv();
-
-  try {
-    await connectToDB();
-    logger.info("Database connected successfully.");
-  } catch (error) {
-    logger.error("Database connection failed:", error);
-    logger.warn("Starting server without database connection...");
-  }
-
+  await connectToDB();
   bootstrapExpress(app);
   logger.info("Express app initiated.");
 
-  // Setup event listeners
   EventEmitterInstance.on("signup", signUpSubscriber);
   EventEmitterInstance.on("forgot", forgetPasswordSubscriber);
 };

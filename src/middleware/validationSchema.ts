@@ -3,7 +3,7 @@ import { AnyZodObject } from "zod";
 
 const validateSchema =
   (schema: AnyZodObject) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction): void => {
     try {
       schema.parse({
         body: req.body,
@@ -15,9 +15,8 @@ const validateSchema =
     } catch (e: any) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const message = e.errors.map((err: any) => err.message);
-      return res
-        .status(400)
-        .json({ message: message.join(","), success: false });
+      res.status(400).json({ message: message.join(","), success: false });
+      return;
     }
   };
 export default validateSchema;

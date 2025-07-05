@@ -1,0 +1,39 @@
+ POST /api/auth/register 500 5.837 ms - Fri, 04 Jul 2025 16:56:50 GMT 
+ POST /api/auth/register 500 0.883 ms - Fri, 04 Jul 2025 16:56:50 GMT 
+ POST /api/auth/register 500 0.410 ms - Fri, 04 Jul 2025 16:56:50 GMT 
+ POST /api/auth/login 500 1.101 ms - Fri, 04 Jul 2025 16:56:50 GMT 
+ GET /api/ 500 0.629 ms - Fri, 04 Jul 2025 16:56:50 GMT 
+ POST /api/auth/register 500 58.950 ms - Fri, 04 Jul 2025 20:18:47 GMT 
+ POST /api/auth/register 500 1.075 ms - Fri, 04 Jul 2025 20:18:47 GMT 
+ POST /api/auth/register 500 1.193 ms - Fri, 04 Jul 2025 20:18:47 GMT 
+ POST /api/auth/login 500 0.705 ms - Fri, 04 Jul 2025 20:18:47 GMT 
+ GET /api/ 500 0.810 ms - Fri, 04 Jul 2025 20:18:47 GMT 
+ POST /api/auth/register 500 10.895 ms - Fri, 04 Jul 2025 20:22:32 GMT 
+ POST /api/auth/register 500 1.123 ms - Fri, 04 Jul 2025 20:22:32 GMT 
+ POST /api/auth/register 500 0.955 ms - Fri, 04 Jul 2025 20:22:32 GMT 
+ POST /api/auth/login 500 0.872 ms - Fri, 04 Jul 2025 20:22:32 GMT 
+ GET /api/ 500 0.727 ms - Fri, 04 Jul 2025 20:22:33 GMT 
+ POST /api/auth/register 500 6.112 ms - Fri, 04 Jul 2025 20:23:01 GMT 
+ POST /api/auth/register 500 1.482 ms - Fri, 04 Jul 2025 20:23:01 GMT 
+ POST /api/auth/register 500 0.986 ms - Fri, 04 Jul 2025 20:23:01 GMT 
+ POST /api/auth/login 500 0.799 ms - Fri, 04 Jul 2025 20:23:02 GMT 
+ GET /api/ 500 0.862 ms - Fri, 04 Jul 2025 20:23:02 GMT 
+ POST /api/auth/register 500 6.063 ms - Fri, 04 Jul 2025 20:23:44 GMT 
+ POST /api/auth/register 500 1.313 ms - Fri, 04 Jul 2025 20:23:44 GMT 
+ POST /api/auth/register 500 0.961 ms - Fri, 04 Jul 2025 20:23:44 GMT 
+ POST /api/auth/login 500 0.789 ms - Fri, 04 Jul 2025 20:23:44 GMT 
+ GET /api/ 500 0.706 ms - Fri, 04 Jul 2025 20:23:44 GMT 
+ GET /api/ 500 6.934 ms PostmanRuntime/7.44.1 Fri, 04 Jul 2025 20:42:24 GMT 
+ GET /api/ 500 1.185 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:42:39 GMT 
+ GET /favicon.ico 500 0.884 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:42:43 GMT 
+ GET /api-docs 500 0.978 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:44:32 GMT 
+ GET /api/ 500 14.163 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:54:00 GMT 
+ GET /favicon.ico 500 0.969 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:54:03 GMT 
+ GET /api/ 500 0.972 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:54:32 GMT 
+ GET /favicon.ico 500 0.784 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Fri, 04 Jul 2025 20:54:32 GMT 
+ GET /api/ 500 7.268 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:38 GMT 
+ GET /favicon.ico 500 1.281 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:41 GMT 
+ GET /api/ 500 1.236 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:44 GMT 
+ GET /favicon.ico 500 0.921 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:45 GMT 
+ GET /api/ 500 0.762 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:47 GMT 
+ GET /favicon.ico 500 0.610 ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Sat, 05 Jul 2025 09:50:48 GMT 
