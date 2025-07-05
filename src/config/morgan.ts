@@ -1,10 +1,16 @@
-import { createWriteStream } from "fs";
+import { createWriteStream, existsSync, mkdirSync } from "fs";
 import morgan from "morgan";
 import path from "path";
 import { validateEnv } from "./env.config";
 
 const nodeEnv = validateEnv()?.env;
 const getIPFormat = () => (nodeEnv === "production" ? ":remote-addr - " : "");
+
+const logDirectory = path.join(__dirname, "..", "logs");
+
+if (!existsSync(logDirectory)) {
+  mkdirSync(logDirectory, { recursive: true });
+}
 
 const accessLogStream = createWriteStream(
   path.join(__dirname, "..", "logs/access.log"),
