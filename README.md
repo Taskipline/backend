@@ -19,7 +19,7 @@ Taskipline is a discipline-focused productivity platform that unifies tasks, cal
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/taskipline.git
+   git clone https://github.com/Taskipline/backend.git
    cd taskipline/backend
    ```
 
