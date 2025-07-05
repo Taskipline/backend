@@ -1,6 +1,6 @@
-const globals = require("globals");
-const tseslint = require("typescript-eslint");
-const js = require("@eslint/js");
+import globals from "globals";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import js from "@eslint/js";
 
 module.exports = [
     // Global ignores
