@@ -24,7 +24,7 @@
     "*.ts": "eslint --cache --fix"
   },
   "type": "commonjs",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon index.ts",
     "start": "tsc & node dist/index.js",
