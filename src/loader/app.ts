@@ -5,19 +5,19 @@ import helmet from "helmet";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "../config/swagger";
 import api from "../api/index.api";
 import {
   notFoundMiddleware,
   errorHandlerMiddleware,
 } from "../middleware/index.middleware";
-import ExpressMongoSanitize from "express-mongo-sanitize";
 import { corsOptions } from "../config/corsOptions";
 import { errorHandler, successHandler } from "../config/morgan";
 config();
-export const bootstrapExpress = (app: any) => {
+export const bootstrapExpress = (app: express.Application) => {
   app.use(successHandler);
   app.use(errorHandler);
-  app.use(ExpressMongoSanitize());
   app.use(morgan("dev"));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -37,7 +37,8 @@ export const bootstrapExpress = (app: any) => {
   app.use(cors(corsOptions));
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: true, limit: "30mb" }));
-  app.use("/api/", api);
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use("/api/v1/", api);
   app.use(notFoundMiddleware);
   app.use(errorHandlerMiddleware);
 };
