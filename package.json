@@ -8,7 +8,19 @@
     "mongodb",
     "express",
     "typescript",
-    "taskipline"
+    "taskipline",
+    "api",
+    "restful",
+    "swagger",
+    "zod",
+    "winston",
+    "eslint",
+    "nodemon",
+    "helmet",
+    "cors",
+    "body-parser",
+    "cookie-parser",
+    "swagger-jsdoc"
   ],
   "homepage": "https://github.com/Taskipline/backend#readme",
   "bugs": {
@@ -19,7 +31,11 @@
     "url": "git+https://github.com/Taskipline/backend.git"
   },
   "license": "ISC",
-  "author": "Emmy-Akintz",
+  "author": {
+    "name": "Ayomide Emmanuel Akintan",
+    "email": "emzyakints2005@gmail.com",
+    "url": "https://github.com/Emmy-Akintz"
+  },
   "lint-staged": {
     "*.ts": "eslint --cache --fix"
   },
