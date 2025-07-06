@@ -8,7 +8,19 @@
     "mongodb",
     "express",
     "typescript",
-    "taskipline"
+    "taskipline",
+    "api",
+    "restful",
+    "swagger",
+    "zod",
+    "winston",
+    "eslint",
+    "nodemon",
+    "helmet",
+    "cors",
+    "body-parser",
+    "cookie-parser",
+    "swagger-jsdoc"
   ],
   "homepage": "https://github.com/Taskipline/backend#readme",
   "bugs": {
@@ -19,24 +31,32 @@
     "url": "git+https://github.com/Taskipline/backend.git"
   },
   "license": "ISC",
-  "author": "Emmy-Akintz",
+  "author": {
+    "name": "Ayomide Emmanuel Akintan",
+    "email": "emzyakints2005@gmail.com",
+    "url": "https://github.com/Emmy-Akintz"
+  },
   "lint-staged": {
-    "*.ts": "eslint --cache --fix"
+    "*.ts": "npm run lint:fix"
   },
   "type": "commonjs",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "nodemon index.ts",
-    "start": "tsc & node dist/index.js",
-    "build": "tsc",
-    "lint": "eslint . --ext .ts",
+    "start": "node dist/index.js",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf dist",
+    "lint": "eslint \"src/**/*.ts\" --cache",
+    "lint:fix": "eslint \"src/**/*.ts\" --cache --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "npx husky"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
-    "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
@@ -44,7 +64,6 @@
     "helmet": "^8.1.0",
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.10",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0",
@@ -62,6 +81,8 @@
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
+    "nodemon": "^3.1.10",
+    "rimraf": "^5.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.1"
