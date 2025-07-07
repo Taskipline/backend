@@ -2,12 +2,12 @@ class CustomAPIError extends Error {
   message: string;
   errorCode: ErrorCode;
   statusCode: number;
-  error: any;
+  error: unknown;
   constructor(
     message: string,
     errorCode: ErrorCode,
     statusCode: number,
-    error: any
+    error: unknown
   ) {
     super(message);
     this.message = message;

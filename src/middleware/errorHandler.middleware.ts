@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import CustomAPIError from "../errors/custom.error";
 
 const errorHandlerMiddleware = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
   const defaultError = {
@@ -22,7 +24,7 @@ const errorHandlerMiddleware = (
       .map((item: { message: string }) => item?.message)
       .join(",");
   }
-  if ((err.name = "CastError")) {
+  if (err.name === "CastError") {
     defaultError.statusCode = 400;
     defaultError.msg = `Resource not found. Invalid :${err.path}`;
   }
