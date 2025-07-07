@@ -10,11 +10,12 @@ export function notFoundMiddleware(
   next(error);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export function errorHandlerMiddleware(
   err: Error,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) {
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
