@@ -32,9 +32,8 @@ export const bootstrapExpress = (app: express.Application) => {
       },
     })
   );
-  app.use(cors());
-  app.use(express.json());
   app.use(cors(corsOptions));
+  app.use(express.json());
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: true, limit: "30mb" }));
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

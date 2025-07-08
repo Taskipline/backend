@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Waitlist } from "../models/waitlist.model";
 import { z } from "zod";
 import { waitlistSchema } from "../schemas/waitlist.schema";
+import { sendWaitlistConfirmationEmail } from "../services/email.service";
 
 export const joinWaitlist = async (req: Request, res: Response) => {
   try {
@@ -13,6 +14,9 @@ export const joinWaitlist = async (req: Request, res: Response) => {
     }
     const newEntry = new Waitlist({ email });
     await newEntry.save();
+
+    sendWaitlistConfirmationEmail(email);
+
     res.status(201).json({ message: "Successfully joined the waitlist" });
   } catch (error) {
     if (error instanceof z.ZodError) {
