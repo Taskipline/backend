@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Waitlist } from "../models/waitlist.model";
-import { z } from "zod";
+import * as z from "zod";
 import { waitlistSchema } from "../schemas/waitlist.schema";
 import { sendWaitlistConfirmationEmail } from "../services/email.service";
 
