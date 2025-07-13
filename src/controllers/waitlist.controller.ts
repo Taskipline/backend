@@ -20,9 +20,7 @@ export const joinWaitlist = async (req: Request, res: Response) => {
     res.status(201).json({ message: "Successfully joined the waitlist" });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res
-        .status(400)
-        .json({ message: "Invalid email format", errors: error.errors });
+      res.status(400).json({ message: "Invalid email format", error: error });
       return;
     }
     res.status(500).json({ message: "Error joining waitlist", error });
