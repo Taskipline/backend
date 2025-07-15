@@ -10,7 +10,10 @@ export const validateEnv = () => {
       port: +envVars.PORT,
       env: envVars.NODE_ENV,
       MONGO_DB_URI: envVars.MONGO_DB_URI,
-      RESEND_API_KEY: envVars.RESEND_API_KEY,
+      RESEND_API_KEY_WAITLIST: envVars.RESEND_API_KEY_WAITLIST,
+      RESEND_API_KEY_VERIFY_ACCOUNT: envVars.RESEND_API_KEY_VERIFY_ACCOUNT,
+      RESEND_API_KEY_WELCOME: envVars.RESEND_API_KEY_WELCOME,
+      CLIENT_URL: envVars.CLIENT_URL,
     };
   } catch (error) {
     let message = undefined;
