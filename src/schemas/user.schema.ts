@@ -16,3 +16,8 @@ export const signupSchema = z.object({
 export const resendVerificationSchema = z.object({
   email: z.email("Invalid email address"),
 });
+
+export const signinSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(1, "Password cannot be empty"),
+});

@@ -1,6 +1,9 @@
 import express from "express";
 import {
+  refreshToken,
   resendVerificationEmail,
+  signin,
+  signout,
   signup,
   verifyAccount,
 } from "../controllers/auth.controller";
@@ -108,5 +111,68 @@ router.get("/verify/:token", tryCatch(verifyAccount));
  *         description: Bad Request - Invalid input data.
  */
 router.post("/resend-verification", tryCatch(resendVerificationEmail));
+
+/**
+ * @swagger
+ * /auth/signin:
+ *   post:
+ *     summary: Sign in a user
+ *     tags: [Authentication]
+ *     description: Authenticates a user and returns an access token and user info. A refresh token is sent in a secure cookie.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: strongpassword123
+ *     responses:
+ *       '200':
+ *         description: Sign-in successful.
+ *       '401':
+ *         description: Unauthorized - Invalid credentials.
+ *       '403':
+ *         description: Forbidden - Account not verified.
+ */
+router.post("/signin", tryCatch(signin));
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh an access token
+ *     tags: [Authentication]
+ *     description: Issues a new access token using the refresh token from the cookie.
+ *     responses:
+ *       '200':
+ *         description: Access token refreshed successfully.
+ *       '401':
+ *         description: Unauthorized - No valid refresh token found.
+ */
+router.post("/refresh", tryCatch(refreshToken));
+
+/**
+ * @swagger
+ * /auth/signout:
+ *   post:
+ *     summary: Sign out a user
+ *     tags: [Authentication]
+ *     description: Clears the user's session by invalidating the refresh token.
+ *     responses:
+ *       '200':
+ *         description: Sign-out successful.
+ */
+router.post("/signout", tryCatch(signout));
 
 export default router;

@@ -14,7 +14,12 @@ import {
 } from "../middleware/index.middleware";
 import { corsOptions } from "../config/corsOptions";
 import { errorHandler, successHandler } from "../config/morgan";
+import { validateEnv } from "../config/env.config";
+
 config();
+
+const { COOKIE_PARSER_SECRET } = validateEnv();
+
 export const bootstrapExpress = (app: express.Application) => {
   app.use(successHandler);
   app.use(errorHandler);
@@ -34,7 +39,7 @@ export const bootstrapExpress = (app: express.Application) => {
   );
   app.use(cors(corsOptions));
   app.use(express.json());
-  app.use(cookieParser());
+  app.use(cookieParser(COOKIE_PARSER_SECRET));
   app.use(bodyParser.urlencoded({ extended: true, limit: "30mb" }));
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use("/api/v1/", api);

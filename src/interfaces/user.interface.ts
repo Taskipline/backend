@@ -9,4 +9,5 @@ export interface IUser extends Document {
   verificationToken?: string;
   verificationTokenExpires?: Date;
   comparePassword(password: string): Promise<boolean>;
+  refreshToken?: string;
 }

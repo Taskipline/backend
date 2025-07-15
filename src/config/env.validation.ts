@@ -14,5 +14,16 @@ export const envSchema = z.object({
     error: "Welcome Resend API key is required",
   }),
   CLIENT_URL: z.url().default("http://localhost:3000"),
+  ACCESS_TOKEN_SECRET: z.string({
+    error: "Access token secret is required",
+  }),
+  ACCESS_TOKEN_LIFETIME: z.string().default("15m"),
+  REFRESH_TOKEN_SECRET: z.string({
+    error: "Refresh token secret is required",
+  }),
+  REFRESH_TOKEN_LIFETIME: z.string().default("7d"),
+  COOKIE_PARSER_SECRET: z.string({
+    error: "Cookie parser secret is required",
+  }),
 });
 export type EnvConfig = z.infer<typeof envSchema>;
