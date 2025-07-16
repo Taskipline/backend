@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  forgotPassword,
   refreshToken,
   resendVerificationEmail,
+  resetPassword,
   signin,
   signout,
   signup,
@@ -174,5 +176,75 @@ router.post("/refresh", tryCatch(refreshToken));
  *         description: Sign-out successful.
  */
 router.post("/signout", tryCatch(signout));
+
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Request a password reset
+ *     tags: [Authentication]
+ *     description: Sends a password reset link to the user's email if the account exists.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@example.com
+ *     responses:
+ *       '200':
+ *         description: If an account with this email exists, a password reset link has been sent.
+ *       '400':
+ *         description: Bad Request - Invalid input data.
+ */
+router.post("/forgot-password", tryCatch(forgotPassword));
+
+/**
+ * @swagger
+ * /auth/reset-password/{token}:
+ *   patch:
+ *     summary: Reset a user's password
+ *     tags: [Authentication]
+ *     description: Sets a new password for the user using the token from the reset link.
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The password reset token from the email link.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *               - confirmPassword
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: newStrongPassword456
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: newStrongPassword456
+ *     responses:
+ *       '200':
+ *         description: Password has been reset successfully.
+ *       '400':
+ *         description: Bad Request - Invalid or expired password reset token, or passwords do not match.
+ */
+router.patch("/reset-password/:token", tryCatch(resetPassword));
 
 export default router;
