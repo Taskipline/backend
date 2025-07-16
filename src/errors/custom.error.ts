@@ -45,6 +45,7 @@ export enum ErrorCode {
   EMAIL_ALREADY_EXISTS = 11002, // Replaces generic RESOURCE_CONFLICT for signup
   INVALID_CREDENTIALS = 11003,
   INVALID_VERIFICATION_TOKEN = 11004,
+  INVALID_RESET_TOKEN = 11005,
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist

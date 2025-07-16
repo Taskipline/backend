@@ -13,6 +13,12 @@ export const envSchema = z.object({
   RESEND_API_KEY_WELCOME: z.string({
     error: "Welcome Resend API key is required",
   }),
+  RESEND_API_KEY_PASSWORD_RESET_LINK: z.string({
+    error: "Password Reset Link Resend API key is required",
+  }),
+  RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL: z.string({
+    error: "Password Reset Successful Resend API key is required",
+  }),
   CLIENT_URL: z.url().default("http://localhost:3000"),
   ACCESS_TOKEN_SECRET: z.string({
     error: "Access token secret is required",

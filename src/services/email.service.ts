@@ -6,11 +6,21 @@ const {
   CLIENT_URL,
   RESEND_API_KEY_VERIFY_ACCOUNT,
   RESEND_API_KEY_WELCOME,
+  RESEND_API_KEY_PASSWORD_RESET_LINK,
+  RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL,
 } = validateEnv();
 
 const waitlistResend = new Resend(RESEND_API_KEY_WAITLIST);
 const verifyAccountResend = new Resend(RESEND_API_KEY_VERIFY_ACCOUNT);
 const welcomeResend = new Resend(RESEND_API_KEY_WELCOME);
+const passwordResetLinkResend = new Resend(RESEND_API_KEY_PASSWORD_RESET_LINK);
+const passwordResetSuccessResend = new Resend(
+  RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL
+);
+
+const emailCallToActionButtonBackgroundColor = "#007bff";
+const emailCallToActionButtonTextColor = "#ffffff";
+// background-color: oklch(0.145 0 0); color: oklch(1 0 0);
 
 /**
  * Sends a confirmation email to a user who has just joined the waitlist.
@@ -22,7 +32,6 @@ export const sendWaitlistConfirmationEmail = async (email: string) => {
       from: "taskipline@emmy-akintz.tech",
       to: [email],
       subject: "You're on the Taskipline Waitlist!",
-      // background-color: oklch(0.145 0 0); color: oklch(1 0 0);
       html: `
         <div style="font-family: sans-serif; padding: 20px; font-size: 16px; line-height: 1.5; font-weight: 400;">
           <h2>Welcome to the Taskipline Waitlist!</h2>
@@ -66,7 +75,7 @@ export const sendAccountVerificationEmail = async (
         <div style="font-family: sans-serif; padding: 20px; font-size: 16px; line-height: 1.5;">
           <h2>Welcome to Taskipline!</h2>
           <p>Please click the button below to verify your email address and activate your account.</p>
-          <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Verify Account</a>
+          <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: ${emailCallToActionButtonTextColor}; background-color: ${emailCallToActionButtonBackgroundColor}; text-decoration: none; border-radius: 5px;">Verify Account</a>
           <p>This link will expire in 10 minutes.</p>
           <p>If you did not sign up for an account, you can safely ignore this email.</p>
           <br>
@@ -113,6 +122,73 @@ export const sendWelcomeEmail = async (email: string, firstName: string) => {
       return;
     }
     console.log("Welcome email sent successfully:", data);
+  } catch (error) {
+    console.error("An unexpected error occurred while sending email:", error);
+  }
+};
+
+/**
+ * Sends an email with a link to reset the user's password.
+ * @param email The email address of the recipient.
+ * @param token The unhashed password reset token.
+ */
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const resetUrl = `${CLIENT_URL}/reset-password/${token}`;
+
+  try {
+    const { data, error } = await passwordResetLinkResend.emails.send({
+      from: "taskipline@emmy-akintz.tech",
+      to: [email],
+      subject: "Reset Your Taskipline Password",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; font-size: 16px; line-height: 1.5;">
+          <h2>Password Reset Request</h2>
+          <p>We received a request to reset your password. Please click the button below to set a new password.</p>
+          <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: ${emailCallToActionButtonTextColor}; background-color: ${emailCallToActionButtonBackgroundColor}; text-decoration: none; border-radius: 5px;">Reset Password</a>
+          <p>This link will expire in 10 minutes.</p>
+          <p>If you did not request a password reset, you can safely ignore this email.</p>
+          <br>
+          <p><strong>The Taskipline Team</strong></p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("Error sending password reset email:", error);
+      return;
+    }
+    console.log("Password reset email sent successfully:", data);
+  } catch (error) {
+    console.error("An unexpected error occurred while sending email:", error);
+  }
+};
+
+/**
+ * Sends a confirmation email after a user's password has been successfully reset.
+ * @param email The email address of the recipient.
+ */
+export const sendPasswordResetSuccessEmail = async (email: string) => {
+  try {
+    const { data, error } = await passwordResetSuccessResend.emails.send({
+      from: "taskipline@emmy-akintz.tech",
+      to: [email],
+      subject: "Your Taskipline Password Has Been Reset",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; font-size: 16px; line-height: 1.5;">
+          <h2>Password Changed Successfully</h2>
+          <p>This email confirms that the password for your Taskipline account has been successfully changed.</p>
+          <p>If you did not make this change, please contact our support team immediately.</p>
+          <br>
+          <p><strong>The Taskipline Team</strong></p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("Error sending password reset success email:", error);
+      return;
+    }
+    console.log("Password reset success email sent successfully:", data);
   } catch (error) {
     console.error("An unexpected error occurred while sending email:", error);
   }

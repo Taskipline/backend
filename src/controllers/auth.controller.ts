@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 import { User } from "../models/user.model";
 import {
+  forgotPasswordSchema,
   resendVerificationSchema,
+  resetPasswordSchema,
   signinSchema,
   signupSchema,
 } from "../schemas/user.schema";
 import {
   sendAccountVerificationEmail,
+  sendPasswordResetEmail,
+  sendPasswordResetSuccessEmail,
   sendWelcomeEmail,
 } from "../services/email.service";
 import {
@@ -22,6 +26,11 @@ import {
   ACCOUNT_VERIFICATION_TOKEN_BYTES,
   ACCOUNT_VERIFICATION_TOKEN_ENCODING,
   ACCOUNT_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
+  PASSWORD_RESET_DIGEST_ENCODING,
+  PASSWORD_RESET_HASH_ALGORITHM,
+  PASSWORD_RESET_TOKEN_BYTES,
+  PASSWORD_RESET_TOKEN_ENCODING,
+  PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES,
 } from "../config/constants.config";
 import { ErrorCode } from "../errors/custom.error";
 import { generateTokens, verifyToken } from "../utils/jwt.utils";
@@ -253,4 +262,73 @@ export const signout = async (req: Request, res: Response) => {
   });
 
   res.status(200).json({ message: "Sign-out successful" });
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = forgotPasswordSchema.parse(req.body);
+  const user = await User.findOne({ email });
+
+  // Security: Always return a success message to prevent email enumeration.
+  // Only proceed if the user exists.
+  if (user) {
+    const resetToken = crypto
+      .randomBytes(PASSWORD_RESET_TOKEN_BYTES)
+      .toString(PASSWORD_RESET_TOKEN_ENCODING);
+
+    user.passwordResetToken = crypto
+      .createHash(PASSWORD_RESET_HASH_ALGORITHM)
+      .update(resetToken)
+      .digest(PASSWORD_RESET_DIGEST_ENCODING);
+
+    // Set token expiration to 10 minutes from now
+    user.passwordResetTokenExpires = new Date(
+      Date.now() + PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES * 60 * 1000
+    );
+
+    await user.save();
+
+    // Send the email with the unhashed token
+    await sendPasswordResetEmail(user.email, resetToken);
+  }
+
+  res.status(200).json({
+    message:
+      "If an account with this email exists, a password reset link has been sent.",
+  });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = resetPasswordSchema.parse(req.body);
+
+  // Hash the incoming token to match the one in the DB
+  const hashedToken = crypto
+    .createHash(PASSWORD_RESET_HASH_ALGORITHM)
+    .update(token)
+    .digest(PASSWORD_RESET_DIGEST_ENCODING);
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpires: { $gt: new Date() },
+  });
+
+  if (!user) {
+    throw new BadRequestError(
+      "Invalid or expired password reset token.",
+      ErrorCode.INVALID_RESET_TOKEN
+    );
+  }
+
+  // Set the new password
+  user.password = password;
+  // Clear the reset token fields
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+
+  await user.save();
+
+  // Send confirmation email
+  await sendPasswordResetSuccessEmail(user.email);
+
+  res.status(200).json({ message: "Password has been reset successfully." });
 };
