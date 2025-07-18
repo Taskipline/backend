@@ -35,3 +35,26 @@ export const resetPasswordSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"], // Point error to the confirmPassword field
   });
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().min(1, "First name cannot be empty").optional(),
+  lastName: z.string().min(1, "Last name cannot be empty").optional(),
+});
+
+export const updatePreferencesSchema = z.object({
+  emailNotifications: z.boolean().optional(),
+  enableAIFeatures: z.boolean().optional(),
+});
+
+export const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1, "Old password is required"),
+    newPassword: z
+      .string()
+      .min(8, "New password must be at least 8 characters long"),
+    confirmNewPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "New passwords do not match",
+    path: ["confirmNewPassword"],
+  });

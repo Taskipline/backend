@@ -39,31 +39,7 @@ Taskipline is a discipline-focused productivity platform that unifies tasks, cal
     cp .env.example .env
     ```
 
-    Then, fill in the values in your new `.env` file. It requires the following variables:
-
-    ```env
-    # Application
-    PORT=5000
-    NODE_ENV=development
-    CLIENT_URL=http://localhost:3000
-
-    # Database
-    MONGO_DB_URI=your_mongodb_connection_string
-
-    # JWT & Cookies
-    ACCESS_TOKEN_SECRET=your_strong_access_token_secret
-    ACCESS_TOKEN_LIFETIME=15m
-    REFRESH_TOKEN_SECRET=your_very_strong_refresh_token_secret
-    REFRESH_TOKEN_LIFETIME=7d
-    COOKIE_PARSER_SECRET=your_strong_cookie_parser_secret
-
-    # Resend API Keys
-    RESEND_API_KEY_WAITLIST=your_resend_api_key
-    RESEND_API_KEY_VERIFY_ACCOUNT=your_resend_api_key
-    RESEND_API_KEY_WELCOME=your_resend_api_key
-    RESEND_API_KEY_PASSWORD_RESET_LINK=your_resend_api_key
-    RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL=your_resend_api_key
-    ```
+    Then, fill in the values in your new `.env` file.
 
 4. **Run the development server:**
 
@@ -71,6 +47,25 @@ Taskipline is a discipline-focused productivity platform that unifies tasks, cal
     npm run dev
     ```
 
-5. **API Documentation:**
+## API Endpoints
 
-    The API documentation is available at
+The API provides the following main resources:
+
+- **`/api/v1/auth`**: Handles user authentication.
+  - `POST /signup`: Register a new user.
+  - `POST /signin`: Log in a user and issue tokens.
+  - `POST /signout`: Log out a user.
+  - `POST /refresh-token`: Issue a new access token.
+  - `POST /verify-account/:token`: Verify a user's email address.
+  - `POST /forgot-password`: Request a password reset link.
+  - `PATCH /reset-password/:token`: Reset the user's password.
+- **`/api/v1/user`**: (Protected) Handles user settings and profile management.
+  - `PATCH /profile`: Update user's first and last name.
+  - `PATCH /preferences`: Update user's notification and feature preferences.
+  - `PATCH /change-password`: Change the authenticated user's password.
+- **`/api/v1/waitlist`**: Handles waitlist signups.
+  - `POST /join`: Add a new user to the waitlist.
+
+## API Documentation
+
+For detailed information on all endpoints, request bodies, and responses, the full OpenAPI (Swagger) documentation is available at `/api-docs` when the server is running.

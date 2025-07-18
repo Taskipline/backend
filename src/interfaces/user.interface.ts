@@ -11,5 +11,7 @@ export interface IUser extends Document {
   refreshToken?: string;
   passwordResetToken?: string;
   passwordResetTokenExpires?: Date;
+  emailNotifications: boolean;
+  enableAIFeatures: boolean;
   comparePassword(password: string): Promise<boolean>;
 }
