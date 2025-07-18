@@ -51,6 +51,14 @@ const userSchema = new Schema<IUser>(
       type: Date,
       select: false,
     },
+    emailNotifications: {
+      type: Boolean,
+      default: true,
+    },
+    enableAIFeatures: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
