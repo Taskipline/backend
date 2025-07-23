@@ -8,7 +8,7 @@ const {
   RESEND_API_KEY_WELCOME,
   RESEND_API_KEY_PASSWORD_RESET_LINK,
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL,
-  RESEND_API_KEY_PASSWORD_DELETE_ACCOUNT,
+  RESEND_API_KEY_DELETE_ACCOUNT,
 } = validateEnv();
 
 const waitlistResend = new Resend(RESEND_API_KEY_WAITLIST);
@@ -18,7 +18,7 @@ const passwordResetLinkResend = new Resend(RESEND_API_KEY_PASSWORD_RESET_LINK);
 const passwordResetSuccessResend = new Resend(
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL
 );
-const accountDeletedResend = new Resend(RESEND_API_KEY_PASSWORD_DELETE_ACCOUNT);
+const accountDeletedResend = new Resend(RESEND_API_KEY_DELETE_ACCOUNT);
 
 const emailCallToActionButtonBackgroundColor = "#007bff";
 const emailCallToActionButtonTextColor = "#ffffff";
