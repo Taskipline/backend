@@ -28,5 +28,6 @@ export const envSchema = z.object({
   RESEND_API_KEY_WELCOME: z.string(),
   RESEND_API_KEY_PASSWORD_RESET_LINK: z.string(),
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL: z.string(),
+  RESEND_API_KEY_PASSWORD_DELETE_ACCOUNT: z.string(),
 });
 export type EnvConfig = z.infer<typeof envSchema>;

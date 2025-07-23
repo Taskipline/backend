@@ -63,6 +63,7 @@ The API provides the following main resources:
   - `PATCH /profile`: Update user's first and last name.
   - `PATCH /preferences`: Update user's notification and feature preferences.
   - `PATCH /change-password`: Change the authenticated user's password.
+  - `DELETE /delete-account`: Delete the authenticated user's account.
 - **`/api/v1/goals`**: (Protected) Handles user goals.
   - `POST /`: Create a new goal, optionally with nested tasks.
   - `GET /`: Get all goals for the user.

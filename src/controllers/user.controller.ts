@@ -2,11 +2,17 @@ import { Request, Response } from "express";
 import { User } from "../models/user.model";
 import {
   changePasswordSchema,
+  deleteAccountSchema,
   updatePreferencesSchema,
   updateProfileSchema,
 } from "../schemas/user.schema";
-import { UnauthorizedError } from "../errors/index.error";
+import { NotFoundError, UnauthorizedError } from "../errors/index.error";
 import { ErrorCode } from "../errors/custom.error";
+import mongoose from "mongoose";
+import { Task } from "../models/task.model";
+import { Goal } from "../models/goal.model";
+import { sendAccountDeletionEmail } from "../services/email.service";
+import { clearAuthCookies } from "../utils/auth.utils";
 
 /**
  * @description Update user's first and last name
@@ -103,4 +109,48 @@ export const changePassword = async (req: Request, res: Response) => {
   await user.save();
 
   res.status(200).json({ message: "Password changed successfully" });
+};
+
+export const deleteAccount = async (req: Request, res: Response) => {
+  const { password } = deleteAccountSchema.parse(req.body);
+  const userId = req.user!.userId;
+
+  const user = await User.findById(userId).select("+password");
+  if (!user) {
+    throw new NotFoundError("User not found", ErrorCode.USER_NOT_FOUND);
+  }
+
+  const isPasswordCorrect = await user.comparePassword(password);
+  if (!isPasswordCorrect) {
+    throw new UnauthorizedError(
+      "Incorrect password",
+      ErrorCode.INCORRECT_PASSWORD
+    );
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Delete all associated data
+    await Task.deleteMany({ user: userId }, { session });
+    await Goal.deleteMany({ user: userId }, { session });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId, { session });
+
+    await session.commitTransaction();
+
+    // Send a final confirmation email
+    sendAccountDeletionEmail(user.email, user.firstName);
+
+    // Clear cookies and send response
+    clearAuthCookies(res);
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };

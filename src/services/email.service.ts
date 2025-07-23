@@ -8,6 +8,7 @@ const {
   RESEND_API_KEY_WELCOME,
   RESEND_API_KEY_PASSWORD_RESET_LINK,
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL,
+  RESEND_API_KEY_PASSWORD_DELETE_ACCOUNT,
 } = validateEnv();
 
 const waitlistResend = new Resend(RESEND_API_KEY_WAITLIST);
@@ -17,6 +18,7 @@ const passwordResetLinkResend = new Resend(RESEND_API_KEY_PASSWORD_RESET_LINK);
 const passwordResetSuccessResend = new Resend(
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL
 );
+const accountDeletedResend = new Resend(RESEND_API_KEY_PASSWORD_DELETE_ACCOUNT);
 
 const emailCallToActionButtonBackgroundColor = "#007bff";
 const emailCallToActionButtonTextColor = "#ffffff";
@@ -189,6 +191,41 @@ export const sendPasswordResetSuccessEmail = async (email: string) => {
       return;
     }
     console.log("Password reset success email sent successfully:", data);
+  } catch (error) {
+    console.error("An unexpected error occurred while sending email:", error);
+  }
+};
+
+/**
+ * Sends a final confirmation email after a user's account has been deleted.
+ * @param email The email address of the recipient.
+ * @param firstName The first name of the user.
+ */
+export const sendAccountDeletionEmail = async (
+  email: string,
+  firstName: string
+) => {
+  try {
+    const { data, error } = await accountDeletedResend.emails.send({
+      from: "taskipline@emmy-akintz.tech",
+      to: [email],
+      subject: "Your Taskipline Account Has Been Deleted",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; font-size: 16px; line-height: 1.5;">
+          <h2>Goodbye, ${firstName}</h2>
+          <p>This email confirms that your Taskipline account and all associated data have been permanently deleted as you requested.</p>
+          <p>We're sorry to see you go, but we wish you the best in your future endeavors.</p>
+          <br>
+          <p><strong>The Taskipline Team</strong></p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("Error sending account deletion email:", error);
+      return;
+    }
+    console.log("Account deletion email sent successfully:", data);
   } catch (error) {
     console.error("An unexpected error occurred while sending email:", error);
   }

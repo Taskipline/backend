@@ -47,6 +47,7 @@ export enum ErrorCode {
   INVALID_VERIFICATION_TOKEN = 11004,
   INVALID_RESET_TOKEN = 11005,
   USER_NOT_FOUND = 11006, // Replaces generic NOT_FOUND for user-related operations
+  INCORRECT_PASSWORD = 11007,
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist
