@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   changePassword,
+  deleteAccount,
   updateUserPreferences,
   updateUserProfile,
 } from "../controllers/user.controller";
@@ -113,5 +114,37 @@ userRouter.patch("/preferences", tryCatch(updateUserPreferences));
  *         description: Unauthorized - Incorrect old password.
  */
 userRouter.patch("/change-password", tryCatch(changePassword));
+
+/**
+ * @swagger
+ * /user/delete-account:
+ *   delete:
+ *     summary: Delete user account
+ *     tags: [User Settings]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Permanently deletes the authenticated user's account and all associated data. This action is irreversible and requires the user's current password for confirmation.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: myCurrentPassword123
+ *     responses:
+ *       '200':
+ *         description: Account deleted successfully.
+ *       '401':
+ *         description: Unauthorized - Incorrect password.
+ *       '404':
+ *         description: User not found.
+ */
+userRouter.delete("/delete-account", tryCatch(deleteAccount));
 
 export default userRouter;

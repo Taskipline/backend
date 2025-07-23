@@ -47,12 +47,19 @@ export enum ErrorCode {
   INVALID_VERIFICATION_TOKEN = 11004,
   INVALID_RESET_TOKEN = 11005,
   USER_NOT_FOUND = 11006, // Replaces generic NOT_FOUND for user-related operations
+  INCORRECT_PASSWORD = 11007,
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist
 
   // --- Input Validation (13xxx) ---
   VALIDATION_ERROR = 13000, // Replaces generic BAD_REQUEST for Zod validation failures
+
+  // --- Task Management (14xxx) ---
+  TASK_NOT_FOUND = 14000, // Replaces generic NOT_FOUND for task-related operations
+
+  // --- Goal Management (15xxx) ---
+  GOAL_NOT_FOUND = 15000, // Replaces generic NOT_FOUND for goal-related
 }
 
 export default CustomAPIError;

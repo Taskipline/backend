@@ -31,10 +31,10 @@ const startServer = async () => {
   await bootstrap(app);
 
   const httpServer = createServer(app);
-  const { port } = validateEnv();
+  const { PORT } = validateEnv();
 
-  const server: Server = httpServer.listen(port, () => {
-    logger.info(`server listening on port ${port}`);
+  const server: Server = httpServer.listen(PORT, () => {
+    logger.info(`server listening on port ${PORT}`);
   });
 
   process.on("uncaughtException", unExpectedErrorHandler(server));

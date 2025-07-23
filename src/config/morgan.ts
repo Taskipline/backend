@@ -3,7 +3,7 @@ import morgan from "morgan";
 import path from "path";
 import { validateEnv } from "./env.config";
 
-const nodeEnv = validateEnv()?.env;
+const nodeEnv = validateEnv()?.NODE_ENV;
 const getIPFormat = () => (nodeEnv === "production" ? ":remote-addr - " : "");
 
 const logDirectory = path.join(__dirname, "..", "logs");
