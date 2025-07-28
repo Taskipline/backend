@@ -1,13 +1,20 @@
 import CustomAPIError, { ErrorCode } from "./custom.error";
 
 class UnauthorizedError extends CustomAPIError {
-  statusCode: number;
+  statusCode = 401;
+  code: ErrorCode;
+
   constructor(
-    message: string,
-    errorCode: ErrorCode = ErrorCode.UNAUTHENTICATED
+    public message: string,
+    code: ErrorCode = ErrorCode.UNAUTHENTICATED
   ) {
-    super(message, errorCode, 401, null);
-    this.statusCode = 401;
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, UnauthorizedError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 
