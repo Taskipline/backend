@@ -1,10 +1,20 @@
 import CustomAPIError, { ErrorCode } from "./custom.error";
 
 class ConflictError extends CustomAPIError {
-  statusCode: number;
-  constructor(message: string, errorCode: ErrorCode) {
-    super(message, errorCode, 409, null);
-    this.statusCode = 409;
+  statusCode = 409;
+  code: ErrorCode;
+
+  constructor(
+    public message: string,
+    code: ErrorCode = ErrorCode.RESOURCE_CONFLICT
+  ) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, ConflictError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 

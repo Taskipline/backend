@@ -156,24 +156,21 @@ export const signin = async (req: Request, res: Response) => {
 
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    throw new UnauthorizedError(
-      "Invalid credentials.",
-      ErrorCode.INVALID_CREDENTIALS
-    );
+    throw new UnauthorizedError("User not found.", ErrorCode.USER_NOT_FOUND);
   }
 
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnauthorizedError(
-      "Invalid credentials.",
-      ErrorCode.INVALID_CREDENTIALS
+      "Incorrect password.",
+      ErrorCode.INCORRECT_PASSWORD
     );
   }
 
   if (!user.isVerified) {
     throw new ForbiddenError(
       "Account not verified. Please check your email for a verification link.",
-      ErrorCode.FORBIDDEN
+      ErrorCode.USER_NOT_VERIFIED
     );
   }
 

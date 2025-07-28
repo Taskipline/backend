@@ -1,20 +1,42 @@
-class CustomAPIError extends Error {
+// class CustomAPIError extends Error {
+//   message: string;
+//   errorCode: ErrorCode;
+//   statusCode: number;
+//   error: unknown;
+//   constructor(
+//     message: string,
+//     errorCode: ErrorCode,
+//     statusCode: number,
+//     error: unknown
+//   ) {
+//     super(message);
+//     this.message = message;
+//     this.errorCode = errorCode;
+//     this.statusCode = statusCode;
+//     this.error = error;
+//   }
+// }
+
+// Define the structure for a serialized error
+interface SerializedError {
   message: string;
-  errorCode: ErrorCode;
-  statusCode: number;
-  error: unknown;
-  constructor(
-    message: string,
-    errorCode: ErrorCode,
-    statusCode: number,
-    error: unknown
-  ) {
+  code: ErrorCode;
+  field?: string;
+}
+
+// Convert CustomAPIError to an abstract class
+export abstract class CustomAPIError extends Error {
+  abstract statusCode: number;
+  abstract code: ErrorCode;
+
+  constructor(message: string) {
     super(message);
-    this.message = message;
-    this.errorCode = errorCode;
-    this.statusCode = statusCode;
-    this.error = error;
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, CustomAPIError.prototype);
   }
+
+  // Force subclasses to implement this method
+  abstract serializeErrors(): SerializedError[];
 }
 
 // export enum ErrorCode {
@@ -38,6 +60,8 @@ export enum ErrorCode {
   // --- General System Errors (10xxx) ---
   INTERNAL_SERVER = 10000,
   NOT_FOUND = 10001,
+  BAD_REQUEST = 10002,
+  RESOURCE_CONFLICT = 10003,
 
   // --- Authentication & Authorization (11xxx) ---
   UNAUTHENTICATED = 11000, // User is not logged in
@@ -48,6 +72,7 @@ export enum ErrorCode {
   INVALID_RESET_TOKEN = 11005,
   USER_NOT_FOUND = 11006, // Replaces generic NOT_FOUND for user-related operations
   INCORRECT_PASSWORD = 11007,
+  USER_NOT_VERIFIED = 11008,
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist

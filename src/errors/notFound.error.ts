@@ -1,10 +1,20 @@
-import CustomAPIError, { ErrorCode } from "./custom.error";
+import { CustomAPIError, ErrorCode } from "./custom.error";
 
 class NotFoundError extends CustomAPIError {
-  statusCode: number;
-  constructor(message: string, errorCode: ErrorCode) {
-    super(message, errorCode, 404, null);
-    this.statusCode = 404;
+  statusCode = 404;
+  code: ErrorCode;
+
+  constructor(
+    public message: string,
+    code: ErrorCode = ErrorCode.NOT_FOUND
+  ) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 

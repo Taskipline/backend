@@ -1,10 +1,20 @@
 import CustomAPIError, { ErrorCode } from "./custom.error";
 
 class BadRequestError extends CustomAPIError {
-  statusCode: number;
-  constructor(message: string, errorCode: ErrorCode) {
-    super(message, errorCode, 400, null);
-    this.statusCode = 400;
+  statusCode = 400;
+  code: ErrorCode;
+
+  constructor(
+    public message: string,
+    code: ErrorCode = ErrorCode.BAD_REQUEST
+  ) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, BadRequestError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 

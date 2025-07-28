@@ -1,10 +1,20 @@
 import CustomAPIError, { ErrorCode } from "./custom.error";
 
 class ForbiddenError extends CustomAPIError {
-  statusCode: number;
-  constructor(message: string, errorCode: ErrorCode) {
-    super(message, errorCode, 403, null);
-    this.statusCode = 403;
+  statusCode = 403;
+  code: ErrorCode;
+
+  constructor(
+    public message: string,
+    code: ErrorCode = ErrorCode.FORBIDDEN
+  ) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 

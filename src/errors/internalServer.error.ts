@@ -1,10 +1,20 @@
 import CustomAPIError, { ErrorCode } from "./custom.error";
 
 class InternalServerError extends CustomAPIError {
-  statusCode: number;
-  constructor(message: string, errorCode: ErrorCode) {
-    super(message, errorCode, 500, null);
-    this.statusCode = 500;
+  statusCode = 500;
+  code: ErrorCode;
+
+  constructor(
+    public message: string,
+    code: ErrorCode = ErrorCode.INTERNAL_SERVER
+  ) {
+    super(message);
+    this.code = code;
+    Object.setPrototypeOf(this, InternalServerError.prototype);
+  }
+
+  serializeErrors() {
+    return [{ message: this.message, code: this.code }];
   }
 }
 
