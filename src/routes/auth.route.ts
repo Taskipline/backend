@@ -1,6 +1,7 @@
 import express from "express";
 import {
   forgotPassword,
+  refreshAccessToken,
   refreshToken,
   resendVerificationEmail,
   resetPassword,
@@ -246,5 +247,20 @@ router.post("/forgot-password", tryCatch(forgotPassword));
  *         description: Bad Request - Invalid or expired password reset token, or passwords do not match.
  */
 router.patch("/reset-password/:token", tryCatch(resetPassword));
+
+/**
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Authentication]
+ *     description: Issues a new access token using a valid refresh token from cookies or Authorization header.
+ *     responses:
+ *       '200':
+ *         description: New access token issued.
+ *       '401':
+ *         description: Unauthorized - Missing or invalid refresh token.
+ */
+router.post("/refresh-token", tryCatch(refreshAccessToken));
 
 export default router;
