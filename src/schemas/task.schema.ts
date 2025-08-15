@@ -11,7 +11,7 @@ export const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   dueDate: z.iso.datetime().optional(), // Expecting ISO string from client
-  priority: z.enum(["Low", "Medium", "High"]).optional(),
+  priority: z.enum(["low", "medium", "high"]).optional(),
   goal: z.string().optional(), // Goal ID
 });
 
