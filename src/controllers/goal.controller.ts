@@ -67,7 +67,7 @@ export const createGoal = async (req: Request, res: Response) => {
 export const getAllGoals = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const goals = await Goal.find({ user: userId })
-    .populate("tasks", "isCompleted") // Only populate the field we need for calculation
+    .populate("tasks")
     .sort({ createdAt: -1 });
 
   const goalsWithCompletion = goals.map((goal) => {

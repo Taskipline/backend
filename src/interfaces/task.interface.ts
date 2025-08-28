@@ -6,6 +6,6 @@ export interface ITask extends Document {
   title: string;
   description?: string;
   dueDate?: Date;
-  priority: "Low" | "Medium" | "High";
+  priority: "low" | "medium" | "high";
   isCompleted: boolean;
 }

@@ -28,8 +28,8 @@ const taskSchema = new Schema<ITask>(
     },
     priority: {
       type: String,
-      enum: ["Low", "Medium", "High"],
-      default: "Medium",
+      enum: ["low", "medium", "high"],
+      default: "medium",
     },
     isCompleted: {
       type: Boolean,
