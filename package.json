@@ -65,14 +65,14 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.17.1",
+    "mongoose": "^8.18.0",
     "morgan": "^1.10.0",
     "resend": "^6.0.1",
     "rimraf": "^6.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0",
-    "zod": "^4.0.17"
+    "zod": "^4.1.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
@@ -80,16 +80,16 @@
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.3.0",
-    "@types/react": "^19.1.10",
-    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@types/react": "^19.1.11",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.39.1",
-    "eslint": "^9.33.0",
+    "eslint": "^9.34.0",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.1"
+    "typescript-eslint": "^8.41.0"
   }
 }
