@@ -73,6 +73,9 @@ export enum ErrorCode {
   USER_NOT_FOUND = 11006, // Replaces generic NOT_FOUND for user-related operations
   INCORRECT_PASSWORD = 11007,
   USER_NOT_VERIFIED = 11008,
+  UNKNOWN_HEADER_SCHEME = 11009, // Added for unknown auth header scheme
+  EXPIRED_BEARER_TOKEN = 11010, // Added for expired bearer tokens
+  EXPIRED_KALIE_TOKEN = 11011, // Added for expired kalie tokens
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist
