@@ -12,22 +12,39 @@ const authenticatedUserMiddleware = (
   const { ACCESS_TOKEN_SECRET } = validateEnv();
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!authHeader) {
     throw new UnauthorizedError(
       "Authentication invalid: No token provided",
       ErrorCode.UNAUTHENTICATED
     );
   }
 
-  const token = authHeader.split(" ")[1];
+  const [scheme, token] = authHeader.split(" ");
 
   const payload = verifyToken(token, ACCESS_TOKEN_SECRET);
 
-  if (!payload) {
-    throw new UnauthorizedError(
-      "Authentication invalid: Token is invalid or expired",
-      ErrorCode.UNAUTHENTICATED
-    );
+  switch (scheme) {
+    case "Bearer":
+      if (!payload) {
+        throw new UnauthorizedError(
+          "Authentication invalid: Bearer token is invalid or expired",
+          ErrorCode.EXPIRED_BEARER_TOKEN
+        );
+      }
+      break;
+    case "KALIE":
+      if (!payload) {
+        throw new UnauthorizedError(
+          "Authentication invalid: Kalie token is invalid or expired",
+          ErrorCode.EXPIRED_KALIE_TOKEN
+        );
+      }
+      break;
+    default:
+      throw new UnauthorizedError(
+        "Authentication invalid: Unknown authentication header scheme",
+        ErrorCode.UNKNOWN_HEADER_SCHEME
+      );
   }
 
   // Attach the user payload to the request object for use in subsequent controllers

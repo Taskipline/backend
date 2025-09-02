@@ -4,6 +4,10 @@ import { IUser } from "../interfaces/user.interface";
 
 const userSchema = new Schema<IUser>(
   {
+    profilePicture: {
+      type: String,
+      default: null,
+    },
     firstName: {
       type: String,
       required: true,
@@ -58,6 +62,15 @@ const userSchema = new Schema<IUser>(
     enableAIFeatures: {
       type: Boolean,
       default: true,
+    },
+    googleId: {
+      type: String,
+      select: false,
+      default: null,
+    },
+    googleAuth: {
+      type: Boolean,
+      default: false,
     },
   },
   {

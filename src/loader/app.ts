@@ -24,17 +24,21 @@ export const bootstrapExpress = (app: express.Application) => {
   app.use(successHandler);
   app.use(errorHandler);
   app.use(morgan("dev"));
-  app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
   app.use(helmet.xssFilter());
   app.use(
     helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'trusted-cdn.com'"],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
+        scriptSrc: ["'self'", "https://accounts.google.com"],
+        frameSrc: ["'self'", "https://accounts.google.com"],
+        connectSrc: ["'self'", "https://accounts.google.com"],
       },
+    })
+  );
+  app.use(
+    helmet.crossOriginOpenerPolicy({
+      policy: "unsafe-none",
     })
   );
   app.use(cors(corsOptions));

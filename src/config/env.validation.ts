@@ -29,5 +29,10 @@ export const envSchema = z.object({
   RESEND_API_KEY_PASSWORD_RESET_LINK: z.string(),
   RESEND_API_KEY_PASSWORD_RESET_SUCCESSFUL: z.string(),
   RESEND_API_KEY_DELETE_ACCOUNT: z.string(),
+
+  // Google OAuth
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REDIRECT_URI: z.url(),
 });
 export type EnvConfig = z.infer<typeof envSchema>;
