@@ -1,6 +1,7 @@
 import express from "express";
 import {
   forgotPassword,
+  googleAuthCallback,
   refreshAccessToken,
   refreshToken,
   resendVerificationEmail,
@@ -262,5 +263,34 @@ router.patch("/reset-password/:token", tryCatch(resetPassword));
  *         description: Unauthorized - Missing or invalid refresh token.
  */
 router.post("/refresh-token", tryCatch(refreshAccessToken));
+
+/**
+ * @swagger
+ * /auth/google/callback:
+ *   post:
+ *     summary: Exchange Google authorization code
+ *     tags: [Authentication]
+ *     description: Exchanges a Google OAuth authorization code for user authentication.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 description: Authorization code from Google OAuth
+ *     responses:
+ *       '200':
+ *         description: Google authentication successful.
+ *       '400':
+ *         description: Bad Request - Invalid code.
+ *       '401':
+ *         description: Unauthorized - Google authentication failed.
+ */
+router.post("/google/callback", tryCatch(googleAuthCallback));
 
 export default router;

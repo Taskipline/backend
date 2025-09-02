@@ -6,6 +6,7 @@ import {
   resendVerificationSchema,
   resetPasswordSchema,
   signinSchema,
+  googleAuthCodeSchema,
   signupSchema,
 } from "../schemas/user.schema";
 import {
@@ -35,8 +36,16 @@ import {
 import { ErrorCode } from "../errors/custom.error";
 import { generateTokens, verifyToken } from "../utils/jwt.utils";
 import { validateEnv } from "../config/env.config";
+import { OAuth2Client } from "google-auth-library";
+import { google } from "googleapis";
 
-const { REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFETIME } = validateEnv();
+const {
+  REFRESH_TOKEN_SECRET,
+  REFRESH_TOKEN_LIFETIME,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI,
+} = validateEnv();
 
 export const signup = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = signupSchema.parse(req.body);
@@ -367,4 +376,121 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   const { accessToken } = generateTokens({ userId: user._id.toString() });
 
   res.status(200).json({ accessToken });
+};
+
+export const googleAuthCallback = async (req: Request, res: Response) => {
+  const { code } = googleAuthCodeSchema.parse(req.body);
+
+  console.log("Using redirect URI:", GOOGLE_REDIRECT_URI);
+
+  // Configure the OAuth2 client
+  const oauth2Client = new OAuth2Client(
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI
+  );
+
+  try {
+    // Exchange code for tokens
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+
+    // Get user profile using access token
+    const userInfoClient = google.oauth2("v2").userinfo;
+    const userInfo = await userInfoClient.get({
+      auth: oauth2Client,
+    });
+
+    // Extract profile info
+    const {
+      id: googleId,
+      email,
+      name,
+      picture: profilePicture,
+    } = userInfo.data;
+
+    if (!email) {
+      throw new BadRequestError(
+        "Email not provided by Google",
+        ErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    const isNewUser = (await User.findOne({ email })) === null;
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user - split name logic
+      const nameParts = name?.split(" ") || ["Google", "User"];
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
+      user = new User({
+        googleId,
+        email,
+        firstName,
+        lastName,
+        profilePicture,
+        googleAuth: true,
+        isVerified: true, // Auto-verified with Google
+      });
+
+      await user.save();
+
+      // Send welcome email for new users
+      await sendWelcomeEmail(user.email, user.firstName);
+    } else {
+      // Update existing user's Google info
+      user.googleId = googleId;
+      user.googleAuth = true;
+      if (profilePicture && !user.profilePicture) {
+        user.profilePicture = profilePicture;
+      }
+      if (!user.isVerified) {
+        user.isVerified = true;
+      }
+      await user.save();
+    }
+
+    // Generate tokens - same as in signin
+    const { accessToken, refreshToken } = generateTokens({
+      userId: user._id.toString(),
+    });
+
+    // Store refresh token in DB
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    // Set refresh token in secure cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      signed: true,
+      maxAge: 1000 * 60 * 60 * 24 * parseInt(REFRESH_TOKEN_LIFETIME),
+    });
+
+    res.status(200).json({
+      message: isNewUser
+        ? "Google signup successful"
+        : "Google sign-in successful",
+      accessToken,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        preferences: {
+          emailNotifications: user.emailNotifications,
+          enableAIFeatures: user.enableAIFeatures,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Google OAuth error:", error);
+    throw new UnauthorizedError(
+      "Failed to authenticate with Google",
+      ErrorCode.INVALID_CREDENTIALS
+    );
+  }
 };
