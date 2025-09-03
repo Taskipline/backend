@@ -220,32 +220,41 @@ export const signin = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.signedCookies;
+  console.log("Refresh token from cookie:", refreshToken);
   if (!refreshToken) {
+    console.log("No refresh token provided");
     throw new UnauthorizedError(
       "Authentication invalid",
-      ErrorCode.UNAUTHENTICATED
+      ErrorCode.MISSING_REFRESH_TOKEN
     );
   }
 
   const payload = verifyToken(refreshToken, REFRESH_TOKEN_SECRET);
+  console.log("Decoded refresh token payload:", payload);
   if (!payload) {
+    console.log(
+      "Invalid refresh token from payload verification (verifyToken)"
+    );
     throw new UnauthorizedError(
       "Authentication invalid",
-      ErrorCode.UNAUTHENTICATED
+      ErrorCode.ERROR_DECODING_REFRESH_TOKEN
     );
   }
 
   const user = await User.findById(payload.userId).select("+refreshToken");
   // Check if user exists and if the token is the same one stored in the DB
+  console.log("User found for refresh token?:", user);
   if (!user || user.refreshToken !== refreshToken) {
+    console.log("Refresh token does not match stored token");
     throw new UnauthorizedError(
       "Authentication invalid",
-      ErrorCode.UNAUTHENTICATED
+      ErrorCode.REFRESH_TOKEN_MISMATCH
     );
   }
 
   // Generate a new access token
   const { accessToken } = generateTokens({ userId: user._id.toString() });
+  console.log("Generated new access token");
 
   res.status(200).json({ accessToken });
 };

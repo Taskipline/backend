@@ -76,6 +76,9 @@ export enum ErrorCode {
   UNKNOWN_HEADER_SCHEME = 11009, // Added for unknown auth header scheme
   EXPIRED_BEARER_TOKEN = 11010, // Added for expired bearer tokens
   EXPIRED_KALIE_TOKEN = 11011, // Added for expired kalie tokens
+  MISSING_REFRESH_TOKEN = 11012, // Added for missing refresh tokens
+  ERROR_DECODING_REFRESH_TOKEN = 11013, // Added for errors decoding refresh tokens
+  REFRESH_TOKEN_MISMATCH = 11014, // Added for refresh token mismatch
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist
