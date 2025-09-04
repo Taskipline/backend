@@ -218,7 +218,7 @@ export const signin = async (req: Request, res: Response) => {
   });
 };
 
-export const refreshToken = async (req: Request, res: Response) => {
+export const refreshAccessToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.signedCookies;
   console.log("Refresh token from cookie:", refreshToken);
   if (!refreshToken) {
@@ -350,41 +350,6 @@ export const resetPassword = async (req: Request, res: Response) => {
   await sendPasswordResetSuccessEmail(user.email);
 
   res.status(200).json({ message: "Password has been reset successfully." });
-};
-
-export const refreshAccessToken = async (req: Request, res: Response) => {
-  const header = req.headers.authorization;
-  const incomingToken =
-    req.signedCookies?.refreshToken || // prefer signed cookie (your signin sets signed: true)
-    (header?.startsWith("Bearer ") ? header.split(" ")[1] : undefined) ||
-    req.body?.refreshToken;
-
-  if (!incomingToken) {
-    throw new UnauthorizedError(
-      "Authentication invalid: No token provided",
-      ErrorCode.UNAUTHENTICATED
-    );
-  }
-
-  const payload = verifyToken(incomingToken, REFRESH_TOKEN_SECRET);
-  if (!payload) {
-    throw new UnauthorizedError(
-      "Authentication invalid: Token verification failed",
-      ErrorCode.UNAUTHENTICATED
-    );
-  }
-
-  const user = await User.findById(payload.userId).select("+refreshToken");
-  if (!user || user.refreshToken !== incomingToken) {
-    throw new UnauthorizedError(
-      "Authentication invalid",
-      ErrorCode.UNAUTHENTICATED
-    );
-  }
-
-  const { accessToken } = generateTokens({ userId: user._id.toString() });
-
-  res.status(200).json({ accessToken });
 };
 
 export const googleAuthCallback = async (req: Request, res: Response) => {
