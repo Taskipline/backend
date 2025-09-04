@@ -71,21 +71,77 @@ export const getTaskById = async (req: Request, res: Response) => {
 export const updateTask = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const { id: taskId } = req.params;
-  const body = updateTaskSchema.parse(req.body);
+  const updateData = updateTaskSchema.parse(req.body);
 
-  const task = await Task.findOneAndUpdate(
-    { _id: taskId, user: userId },
-    body,
-    {
-      new: true,
-      runValidators: true,
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const currentTask = await Task.findOne({
+      _id: taskId,
+      user: userId,
+    }).session(session);
+    if (!currentTask) {
+      throw new NotFoundError("Task not found", ErrorCode.TASK_NOT_FOUND);
     }
-  );
 
-  if (!task) {
-    throw new NotFoundError("Task not found", ErrorCode.TASK_NOT_FOUND);
+    const oldGoalId = currentTask.goal;
+
+    const isGoalFieldModified = "goal" in updateData;
+
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: taskId, user: userId },
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      }
+    );
+
+    if (isGoalFieldModified) {
+      const newGoalId = updateData.goal;
+
+      if (oldGoalId) {
+        if (!newGoalId || oldGoalId.toString() !== newGoalId.toString()) {
+          await Goal.updateOne(
+            { _id: oldGoalId, user: userId },
+            { $pull: { tasks: taskId } },
+            { session }
+          );
+        }
+      }
+
+      if (newGoalId) {
+        if (!oldGoalId || oldGoalId.toString() !== newGoalId.toString()) {
+          const newGoal = await Goal.findOne({
+            _id: newGoalId,
+            user: userId,
+          }).session(session);
+          if (!newGoal) {
+            throw new BadRequestError(
+              "Goal not found or you do not have permission to access it",
+              ErrorCode.GOAL_NOT_FOUND
+            );
+          }
+
+          await Goal.updateOne(
+            { _id: newGoalId },
+            { $addToSet: { tasks: taskId } },
+            { session }
+          );
+        }
+      }
+    }
+
+    await session.commitTransaction();
+    res.status(200).json({ message: "Task updated", task: updatedTask });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-  res.status(200).json({ message: "Task updated", task });
 };
 
 export const deleteTask = async (req: Request, res: Response) => {
