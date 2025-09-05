@@ -63,6 +63,6 @@ export const deleteAccountSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export const googleAuthCodeSchema = z.object({
-  code: z.string().min(1, "Authorization code is required"),
+export const googleAuthSchema = z.object({
+  accessToken: z.string().min(1, "Access token is required"),
 });

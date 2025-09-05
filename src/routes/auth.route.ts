@@ -1,7 +1,7 @@
 import express from "express";
 import {
   forgotPassword,
-  googleAuthCallback,
+  googleAuth,
   refreshAccessToken,
   resendVerificationEmail,
   resetPassword,
@@ -250,11 +250,11 @@ router.patch("/reset-password/:token", tryCatch(resetPassword));
 
 /**
  * @swagger
- * /auth/google/callback:
+ * /auth/google:
  *   post:
- *     summary: Exchange Google authorization code
+ *     summary: Authenticate with Google
  *     tags: [Authentication]
- *     description: Exchanges a Google OAuth authorization code for user authentication.
+ *     description: Verifies Google ID token and signs in or registers user
  *     requestBody:
  *       required: true
  *       content:
@@ -262,19 +262,19 @@ router.patch("/reset-password/:token", tryCatch(resetPassword));
  *           schema:
  *             type: object
  *             required:
- *               - code
+ *               - idToken
  *             properties:
- *               code:
+ *               idToken:
  *                 type: string
- *                 description: Authorization code from Google OAuth
+ *                 description: Google ID token from client-side authentication
  *     responses:
  *       '200':
- *         description: Google authentication successful.
+ *         description: Authentication successful
  *       '400':
- *         description: Bad Request - Invalid code.
+ *         description: Bad Request - Invalid token
  *       '401':
- *         description: Unauthorized - Google authentication failed.
+ *         description: Unauthorized - Authentication failed
  */
-router.post("/google/callback", tryCatch(googleAuthCallback));
+router.post("/google", tryCatch(googleAuth));
 
 export default router;
