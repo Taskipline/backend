@@ -6,8 +6,8 @@ import {
   resendVerificationSchema,
   resetPasswordSchema,
   signinSchema,
-  googleAuthCodeSchema,
   signupSchema,
+  googleAuthSchema,
 } from "../schemas/user.schema";
 import {
   sendAccountVerificationEmail,
@@ -36,16 +36,8 @@ import {
 import { ErrorCode } from "../errors/custom.error";
 import { generateTokens, verifyToken } from "../utils/jwt.utils";
 import { validateEnv } from "../config/env.config";
-import { OAuth2Client } from "google-auth-library";
-import { google } from "googleapis";
 
-const {
-  REFRESH_TOKEN_SECRET,
-  REFRESH_TOKEN_LIFETIME,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_REDIRECT_URI,
-} = validateEnv();
+const { REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFETIME } = validateEnv();
 
 export const signup = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = signupSchema.parse(req.body);
@@ -170,6 +162,12 @@ export const signin = async (req: Request, res: Response) => {
 
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
+    if (user.googleAuth) {
+      throw new UnauthorizedError(
+        "Incorrect password. You've previously signed in with Google. Try using 'Sign in with Google' instead.",
+        ErrorCode.INCORRECT_PASSWORD_GOOGLE_USER
+      );
+    }
     throw new UnauthorizedError(
       "Incorrect password.",
       ErrorCode.INCORRECT_PASSWORD
@@ -352,40 +350,49 @@ export const resetPassword = async (req: Request, res: Response) => {
   res.status(200).json({ message: "Password has been reset successfully." });
 };
 
-export const googleAuthCallback = async (req: Request, res: Response) => {
-  const { code } = googleAuthCodeSchema.parse(req.body);
-
-  console.log("Using redirect URI:", GOOGLE_REDIRECT_URI);
-
-  // Configure the OAuth2 client
-  const oauth2Client = new OAuth2Client(
-    GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET,
-    GOOGLE_REDIRECT_URI
-  );
+export const googleAuth = async (req: Request, res: Response) => {
+  const { accessToken } = googleAuthSchema.parse(req.body);
 
   try {
-    // Exchange code for tokens
-    const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
+    // Fetch user info using the access token directly
+    const response = await fetch(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(10000),
+      }
+    );
 
-    // Get user profile using access token
-    const userInfoClient = google.oauth2("v2").userinfo;
-    const userInfo = await userInfoClient.get({
-      auth: oauth2Client,
-    });
+    if (!response.ok) {
+      console.error("Google API error:", await response.text());
+      throw new UnauthorizedError(
+        "Failed to verify Google access token",
+        ErrorCode.GOOGLE_AUTH_FAILURE
+      );
+    }
 
-    // Extract profile info
+    const payload = await response.json();
+    if (!payload || !payload.email) {
+      throw new BadRequestError(
+        "Invalid user information from Google",
+        ErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    // Extract user info from the payload
     const {
-      id: googleId,
+      sub: googleId,
       email,
       name,
       picture: profilePicture,
-    } = userInfo.data;
+      email_verified: emailVerified,
+    } = payload;
 
-    if (!email) {
+    // Only proceed if email is verified
+    if (!emailVerified) {
       throw new BadRequestError(
-        "Email not provided by Google",
+        "Google email not verified",
         ErrorCode.INVALID_CREDENTIALS
       );
     }
@@ -394,7 +401,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create new user - split name logic
+      // Create new user
       const nameParts = name?.split(" ") || ["Google", "User"];
       const firstName = nameParts[0];
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
@@ -427,7 +434,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
     }
 
     // Generate tokens - same as in signin
-    const { accessToken, refreshToken } = generateTokens({
+    const { accessToken: jwtAccessToken, refreshToken } = generateTokens({
       userId: user._id.toString(),
     });
 
@@ -435,11 +442,13 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Set refresh token in secure cookie
+    // Set refresh token as cookie with environment-aware settings
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       signed: true,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * parseInt(REFRESH_TOKEN_LIFETIME),
     });
 
@@ -447,7 +456,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
       message: isNewUser
         ? "Google signup successful"
         : "Google sign-in successful",
-      accessToken,
+      accessToken: jwtAccessToken,
       user: {
         id: user._id,
         firstName: user.firstName,
@@ -461,10 +470,10 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Google OAuth error:", error);
+    console.error("Google authentication error:", error);
     throw new UnauthorizedError(
       "Failed to authenticate with Google",
-      ErrorCode.INVALID_CREDENTIALS
+      ErrorCode.GOOGLE_AUTH_FAILURE
     );
   }
 };
