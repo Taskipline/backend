@@ -80,6 +80,7 @@ export enum ErrorCode {
   ERROR_DECODING_REFRESH_TOKEN = 11013, // Added for errors decoding refresh tokens
   REFRESH_TOKEN_MISMATCH = 11014, // Added for refresh token mismatch
   GOOGLE_AUTH_FAILURE = 11015, // Added for Google OAuth failures
+  INCORRECT_PASSWORD_GOOGLE_USER = 11016, // Added for Google user trying to login with password
 
   // --- Waitlist (12xxx) ---
   WAITLIST_EMAIL_ALREADY_EXISTS = 12001, // Replaces generic RESOURCE_CONFLICT for waitlist

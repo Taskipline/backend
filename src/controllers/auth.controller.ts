@@ -162,6 +162,12 @@ export const signin = async (req: Request, res: Response) => {
 
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
+    if (user.googleAuth) {
+      throw new UnauthorizedError(
+        "Incorrect password. You've previously signed in with Google. Try using 'Sign in with Google' instead.",
+        ErrorCode.INCORRECT_PASSWORD_GOOGLE_USER
+      );
+    }
     throw new UnauthorizedError(
       "Incorrect password.",
       ErrorCode.INCORRECT_PASSWORD
