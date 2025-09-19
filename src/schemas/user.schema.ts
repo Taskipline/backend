@@ -66,3 +66,7 @@ export const deleteAccountSchema = z.object({
 export const googleAuthSchema = z.object({
   accessToken: z.string().min(1, "Access token is required"),
 });
+
+export const githubAuthSchema = z.object({
+  code: z.string().min(1, "Code is required"),
+});

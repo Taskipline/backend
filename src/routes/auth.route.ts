@@ -1,6 +1,7 @@
 import express from "express";
 import {
   forgotPassword,
+  githubAuth,
   googleAuth,
   refreshAccessToken,
   resendVerificationEmail,
@@ -276,5 +277,34 @@ router.patch("/reset-password/:token", tryCatch(resetPassword));
  *         description: Unauthorized - Authentication failed
  */
 router.post("/google", tryCatch(googleAuth));
+
+/**
+ * @swagger
+ * /auth/github:
+ *   post:
+ *     summary: Authenticate with Github
+ *     tags: [Authentication]
+ *     description: Verifies Github code and signs in with user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 description: Github code token from client-side authentication
+ *     responses:
+ *       '200':
+ *         description: Authentication successful
+ *       '400':
+ *         description: Bad Request - Invalid token
+ *       '401':
+ *         description: Unauthorized - Authentication failed
+ */
+router.post("/github", tryCatch(githubAuth));
 
 export default router;

@@ -72,6 +72,15 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    githubId: {
+      type: String,
+      select: false,
+      default: null,
+    },
+    githubAuth: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
