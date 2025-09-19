@@ -34,5 +34,11 @@ export const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   GOOGLE_REDIRECT_URI: z.url(),
+
+  // Github OAuth
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_SECRET: z.string(),
+  GITHUB_REDIRECT_PATH: z.string(),
+  GITHUB_STATE: z.string(),
 });
 export type EnvConfig = z.infer<typeof envSchema>;

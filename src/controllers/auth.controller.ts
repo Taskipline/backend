@@ -8,6 +8,7 @@ import {
   signinSchema,
   signupSchema,
   googleAuthSchema,
+  githubAuthSchema,
 } from "../schemas/user.schema";
 import {
   sendAccountVerificationEmail,
@@ -37,7 +38,13 @@ import { ErrorCode } from "../errors/custom.error";
 import { generateTokens, verifyToken } from "../utils/jwt.utils";
 import { validateEnv } from "../config/env.config";
 
-const { REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFETIME } = validateEnv();
+const {
+  REFRESH_TOKEN_SECRET,
+  REFRESH_TOKEN_LIFETIME,
+  GITHUB_CLIENT_ID,
+  GITHUB_SECRET,
+  GITHUB_REDIRECT_PATH,
+} = validateEnv();
 
 export const signup = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = signupSchema.parse(req.body);
@@ -474,6 +481,186 @@ export const googleAuth = async (req: Request, res: Response) => {
     throw new UnauthorizedError(
       "Failed to authenticate with Google",
       ErrorCode.GOOGLE_AUTH_FAILURE
+    );
+  }
+};
+
+export const githubAuth = async (req: Request, res: Response) => {
+  const { code } = githubAuthSchema.parse(req.body);
+
+  try {
+    // Exchange code for access token
+    const accessTokenResponse = await fetch(
+      "https://github.com/login/oauth/access_token",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: GITHUB_CLIENT_ID,
+          client_secret: GITHUB_SECRET,
+          code,
+          redirect_uri: GITHUB_REDIRECT_PATH,
+        }),
+      }
+    );
+
+    if (!accessTokenResponse.ok) {
+      console.error(
+        "Error exchanging github code for access token:",
+        await accessTokenResponse.text(),
+        accessTokenResponse
+      );
+      throw new UnauthorizedError(
+        "Failed to exchange code for access token",
+        ErrorCode.GITHUB_AUTH_FAILURE
+      );
+    }
+
+    const accessTokenData = await accessTokenResponse.json();
+    if (!accessTokenData || !accessTokenData.access_token) {
+      throw new BadRequestError(
+        "Invalid user information from Github",
+        ErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    // Fetch user info using the access token directly
+    const userGithubResponse = await fetch("https://api.github.com/user", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessTokenData.access_token}`,
+      },
+    });
+
+    if (!userGithubResponse.ok) {
+      console.error("Github API error:", await userGithubResponse.text());
+      throw new UnauthorizedError(
+        "Failed to fetch user info from Github",
+        ErrorCode.GITHUB_AUTH_FAILURE
+      );
+    }
+
+    const payload = await userGithubResponse.json();
+    console.log("Github user payload:", payload);
+    if (!payload || !payload.email) {
+      throw new BadRequestError(
+        "Invalid user information from Github",
+        ErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    // If email is not in the main payload, fetch emails
+    if (!payload.email) {
+      const emailResponse = await fetch("https://api.github.com/user/emails", {
+        headers: {
+          Authorization: `Bearer ${accessTokenData.access_token}`,
+        },
+      });
+
+      if (emailResponse.ok) {
+        const emails = await emailResponse.json();
+        console.log("Github user emails:", emails);
+        const primaryEmail = emails.find((email) => email.primary);
+        if (primaryEmail) {
+          payload.email = primaryEmail.email;
+        } else if (emails.length > 0) {
+          // Use the first email if no primary is marked
+          payload.email = emails[0].email;
+        }
+      }
+    }
+
+    // Ensure we have an email
+    if (!payload.email) {
+      throw new BadRequestError(
+        "Could not retrieve email from GitHub",
+        ErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    // Check if user exists
+    const isNewUser = (await User.findOne({ email: payload.email })) === null;
+    let user = await User.findOne({ email: payload.email });
+
+    if (!user) {
+      // Create new user
+      // Parse name - GitHub provides full name or just login
+      const name = payload.name || payload.login || "GitHub User";
+      const nameParts = name.split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
+      user = new User({
+        githubId: payload.id,
+        email: payload.email,
+        firstName,
+        lastName,
+        profilePicture: payload.avatar_url,
+        githubAuth: true,
+        isVerified: true, // Auto-verified with GitHub
+      });
+
+      await user.save();
+
+      // Send welcome email for new users
+      await sendWelcomeEmail(user.email, user.firstName);
+    } else {
+      // Update existing user's GitHub info
+      user.githubId = payload.id;
+      user.githubAuth = true;
+      if (payload.avatar_url && !user.profilePicture) {
+        user.profilePicture = payload.avatar_url;
+      }
+      if (!user.isVerified) {
+        user.isVerified = true;
+      }
+      await user.save();
+    }
+
+    // Generate tokens - same as in signin and googleAuth
+    const { accessToken: jwtAccessToken, refreshToken } = generateTokens({
+      userId: user._id.toString(),
+    });
+
+    // Store refresh token in DB
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    // Set refresh token as cookie with environment-aware settings
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      signed: true,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * parseInt(REFRESH_TOKEN_LIFETIME),
+    });
+
+    res.status(200).json({
+      message: isNewUser
+        ? "GitHub signup successful"
+        : "GitHub sign-in successful",
+      accessToken: jwtAccessToken,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        preferences: {
+          emailNotifications: user.emailNotifications,
+          enableAIFeatures: user.enableAIFeatures,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Github authentication error:", error);
+    throw new UnauthorizedError(
+      "Failed to authenticate with Github",
+      ErrorCode.GITHUB_AUTH_FAILURE
     );
   }
 };

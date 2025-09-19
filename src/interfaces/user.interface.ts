@@ -16,5 +16,7 @@ export interface IUser extends Document {
   enableAIFeatures: boolean;
   googleId?: string;
   googleAuth?: boolean;
+  githubId?: string;
+  githubAuth?: boolean;
   comparePassword(password: string): Promise<boolean>;
 }

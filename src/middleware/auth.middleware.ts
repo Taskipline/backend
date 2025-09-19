@@ -32,7 +32,7 @@ const authenticatedUserMiddleware = (
         );
       }
       break;
-    case "KALIE":
+    case "KALI":
       if (!payload) {
         throw new UnauthorizedError(
           "Authentication invalid: Kalie token is invalid or expired",
