@@ -1,22 +1,3 @@
-// class CustomAPIError extends Error {
-//   message: string;
-//   errorCode: ErrorCode;
-//   statusCode: number;
-//   error: unknown;
-//   constructor(
-//     message: string,
-//     errorCode: ErrorCode,
-//     statusCode: number,
-//     error: unknown
-//   ) {
-//     super(message);
-//     this.message = message;
-//     this.errorCode = errorCode;
-//     this.statusCode = statusCode;
-//     this.error = error;
-//   }
-// }
-
 // Define the structure for a serialized error
 interface SerializedError {
   message: string;
@@ -39,13 +20,6 @@ export abstract class CustomAPIError extends Error {
   abstract serializeErrors(): SerializedError[];
 }
 
-// export enum ErrorCode {
-//   NOT_FOUND = 10001,
-//   FORBIDDEN = 10002,
-//   INTERNAL_SERVER = 10003,
-//   BAD_REQUEST = 10004,
-//   RESOURCE_CONFLICT = 10005,
-// }
 /**
  * Custom application-specific error codes.
  * Grouped by feature for clarity and scalability.
@@ -97,3 +71,220 @@ export enum ErrorCode {
 }
 
 export default CustomAPIError;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ErrorCode:
+ *       type: object
+ *       description: |-
+ *         # Error Code Reference
+ *
+ *         This API uses standardized error codes to help with debugging and error handling.
+ *         Each error response includes an application-specific error code that provides more
+ *         detailed information about the specific error.
+ *
+ *         ## Error Code Categories
+ *
+ *         - **10xxx**: General System Errors
+ *         - **11xxx**: Authentication & Authorization
+ *         - **12xxx**: Waitlist
+ *         - **13xxx**: Input Validation
+ *         - **14xxx**: Task Management
+ *         - **15xxx**: Goal Management
+ *       properties:
+ *         # --- General System Errors (10xxx) ---
+ *         '10000':
+ *           type: object
+ *           description: INTERNAL_SERVER - Server failed to process the request due to an internal error
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [System]
+ *         '10001':
+ *           type: object
+ *           description: NOT_FOUND - The requested resource could not be found
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [System]
+ *         '10002':
+ *           type: object
+ *           description: BAD_REQUEST - Request contains invalid parameters or data
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [System]
+ *         '10003':
+ *           type: object
+ *           description: RESOURCE_CONFLICT - The resource already exists or conflicts with another resource
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [System]
+ *
+ *         # --- Authentication & Authorization (11xxx) ---
+ *         '11000':
+ *           type: object
+ *           description: UNAUTHENTICATED - User is not logged in or session has expired
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11001':
+ *           type: object
+ *           description: FORBIDDEN - User is logged in but lacks permission for the requested operation
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authorization]
+ *         '11002':
+ *           type: object
+ *           description: EMAIL_ALREADY_EXISTS - Attempting to register with an email that is already in use
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Registration]
+ *         '11003':
+ *           type: object
+ *           description: INVALID_CREDENTIALS - Provided login credentials are incorrect
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11004':
+ *           type: object
+ *           description: INVALID_VERIFICATION_TOKEN - Email verification token is invalid or has expired
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Verification]
+ *         '11005':
+ *           type: object
+ *           description: INVALID_RESET_TOKEN - Password reset token is invalid or has expired
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [PasswordReset]
+ *         '11006':
+ *           type: object
+ *           description: USER_NOT_FOUND - The requested user account does not exist
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11007':
+ *           type: object
+ *           description: INCORRECT_PASSWORD - The provided password does not match the user's password
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11008':
+ *           type: object
+ *           description: USER_NOT_VERIFIED - User has not completed email verification process
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Verification]
+ *         '11009':
+ *           type: object
+ *           description: UNKNOWN_HEADER_SCHEME - The authorization header contains an unknown scheme
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11010':
+ *           type: object
+ *           description: EXPIRED_BEARER_TOKEN - The provided bearer token has expired
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11011':
+ *           type: object
+ *           description: EXPIRED_KALIE_TOKEN - The provided Kalie token has expired
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11012':
+ *           type: object
+ *           description: MISSING_REFRESH_TOKEN - No refresh token was provided with the request
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11013':
+ *           type: object
+ *           description: ERROR_DECODING_REFRESH_TOKEN - The refresh token could not be decoded or is malformed
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11014':
+ *           type: object
+ *           description: REFRESH_TOKEN_MISMATCH - The provided refresh token doesn't match the one stored for this user
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11015':
+ *           type: object
+ *           description: GOOGLE_AUTH_FAILURE - Failed to authenticate with Google OAuth
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11016':
+ *           type: object
+ *           description: INCORRECT_PASSWORD_GOOGLE_USER - Google-authenticated user attempted to login with a password
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *         '11017':
+ *           type: object
+ *           description: GITHUB_AUTH_FAILURE - Failed to authenticate with GitHub OAuth
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Authentication]
+ *
+ *         # --- Waitlist (12xxx) ---
+ *         '12001':
+ *           type: object
+ *           description: WAITLIST_EMAIL_ALREADY_EXISTS - The email address is already registered in the waitlist
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Waitlist]
+ *
+ *         # --- Input Validation (13xxx) ---
+ *         '13000':
+ *           type: object
+ *           description: VALIDATION_ERROR - Input data failed schema validation (typically Zod validation failures)
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Validation]
+ *
+ *         # --- Task Management (14xxx) ---
+ *         '14000':
+ *           type: object
+ *           description: TASK_NOT_FOUND - The requested task does not exist or is not accessible
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Task]
+ *
+ *         # --- Goal Management (15xxx) ---
+ *         '15000':
+ *           type: object
+ *           description: GOAL_NOT_FOUND - The requested goal does not exist or is not accessible
+ *           properties:
+ *             category:
+ *               type: string
+ *               enum: [Goal]
+ */

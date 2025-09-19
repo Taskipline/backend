@@ -17,7 +17,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
+ *  tags:
  *   name: Authentication
  *   description: User authentication and account management
  */
@@ -59,10 +59,34 @@ const router = express.Router();
  *     responses:
  *       '201':
  *         description: Signup successful. A verification email has been sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Signup successful. Verification email sent."
  *       '400':
  *         description: Bad Request - Invalid input data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid input data."
+ *               statusCode: 400
+ *               code: 10001
  *       '409':
  *         description: Conflict - An account with this email already exists.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "An account with this email already exists."
+ *               statusCode: 409
+ *               code: 10002
  */
 router.post("/signup", tryCatch(signup));
 
@@ -83,8 +107,25 @@ router.post("/signup", tryCatch(signup));
  *     responses:
  *       '200':
  *         description: Account verified successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "Account verified successfully."
  *       '400':
  *         description: Bad Request - Invalid or expired verification token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid or expired verification token."
+ *               statusCode: 400
+ *               code: 10003
  */
 router.get("/verify/:token", tryCatch(verifyAccount));
 
@@ -111,8 +152,35 @@ router.get("/verify/:token", tryCatch(verifyAccount));
  *     responses:
  *       '200':
  *         description: If an account with this email exists and is not verified, a new verification link has been sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "Verification email resent successfully."
  *       '400':
  *         description: Bad Request - Invalid input data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid email format."
+ *               statusCode: 400
+ *               code: 10004
+ *       '404':
+ *         description: Not Found - Account not found or already verified.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Account not found or already verified."
+ *               statusCode: 404
+ *               code: 10005
  */
 router.post("/resend-verification", tryCatch(resendVerificationEmail));
 
@@ -144,10 +212,42 @@ router.post("/resend-verification", tryCatch(resendVerificationEmail));
  *     responses:
  *       '200':
  *         description: Sign-in successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               message: "Sign-in successful."
+ *               accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               user:
+ *                 id: "65f23d9e12345a6789b0cde1"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 email: "john.doe@example.com"
+ *                 profilePicture: "https://example.com/profile.jpg"
+ *                 preferences:
+ *                   emailNotifications: true
+ *                   enableAIFeatures: true
  *       '401':
  *         description: Unauthorized - Invalid credentials.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid email or password."
+ *               statusCode: 401
+ *               code: 11001
  *       '403':
  *         description: Forbidden - Account not verified.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Account not verified. Please check your email for verification instructions."
+ *               statusCode: 403
+ *               code: 11002
  */
 router.post("/signin", tryCatch(signin));
 
@@ -161,8 +261,25 @@ router.post("/signin", tryCatch(signin));
  *     responses:
  *       '200':
  *         description: Access token refreshed successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *             example:
+ *               accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       '401':
  *         description: Unauthorized - No valid refresh token found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid refresh token."
+ *               statusCode: 401
+ *               code: 11003
  */
 router.post("/refresh-token", tryCatch(refreshAccessToken));
 
@@ -176,6 +293,15 @@ router.post("/refresh-token", tryCatch(refreshAccessToken));
  *     responses:
  *       '200':
  *         description: Sign-out successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "Sign-out successful."
  */
 router.post("/signout", tryCatch(signout));
 
@@ -202,8 +328,25 @@ router.post("/signout", tryCatch(signout));
  *     responses:
  *       '200':
  *         description: If an account with this email exists, a password reset link has been sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "If an account with this email exists, a password reset link has been sent."
  *       '400':
  *         description: Bad Request - Invalid input data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid email format."
+ *               statusCode: 400
+ *               code: 10006
  */
 router.post("/forgot-password", tryCatch(forgotPassword));
 
@@ -244,8 +387,35 @@ router.post("/forgot-password", tryCatch(forgotPassword));
  *     responses:
  *       '200':
  *         description: Password has been reset successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "Password has been reset successfully."
  *       '400':
  *         description: Bad Request - Invalid or expired password reset token, or passwords do not match.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid or expired password reset token."
+ *               statusCode: 400
+ *               code: 10007
+ *       '404':
+ *         description: Not Found - User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "User not found."
+ *               statusCode: 404
+ *               code: 10008
  */
 router.patch("/reset-password/:token", tryCatch(resetPassword));
 
@@ -271,10 +441,42 @@ router.patch("/reset-password/:token", tryCatch(resetPassword));
  *     responses:
  *       '200':
  *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               message: "Google sign-in successful."
+ *               accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               user:
+ *                 id: "65f23d9e12345a6789b0cde1"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 email: "john.doe@gmail.com"
+ *                 profilePicture: "https://lh3.googleusercontent.com/a-/..."
+ *                 preferences:
+ *                   emailNotifications: true
+ *                   enableAIFeatures: true
  *       '400':
  *         description: Bad Request - Invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Invalid Google token."
+ *               statusCode: 400
+ *               code: 11005
  *       '401':
  *         description: Unauthorized - Authentication failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Google authentication failed."
+ *               statusCode: 401
+ *               code: 11006
  */
 router.post("/google", tryCatch(googleAuth));
 
@@ -284,7 +486,7 @@ router.post("/google", tryCatch(googleAuth));
  *   post:
  *     summary: Authenticate with Github
  *     tags: [Authentication]
- *     description: Verifies Github code and signs in with user
+ *     description: Verifies Github code and signs in or registers user
  *     requestBody:
  *       required: true
  *       content:
@@ -296,15 +498,67 @@ router.post("/google", tryCatch(googleAuth));
  *             properties:
  *               code:
  *                 type: string
- *                 description: Github code token from client-side authentication
+ *                 description: Github code from client-side authentication flow
  *     responses:
  *       '200':
  *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               message: "GitHub sign-in successful"
+ *               accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               user:
+ *                 id: "65f23d9e12345a6789b0cde1"
+ *                 firstName: "Ayomide"
+ *                 lastName: "Akintan"
+ *                 email: "emzyakints2005@gmail.com"
+ *                 profilePicture: "https://avatars.githubusercontent.com/u/115672480?v=4"
+ *                 preferences:
+ *                   emailNotifications: true
+ *                   enableAIFeatures: true
  *       '400':
- *         description: Bad Request - Invalid token
+ *         description: Bad Request - Invalid code or missing email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Could not retrieve email from GitHub."
+ *               statusCode: 400
+ *               code: 11003
  *       '401':
- *         description: Unauthorized - Authentication failed
+ *         description: Unauthorized - Failed to exchange code for token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               message: "Failed to exchange code for access token."
+ *               statusCode: 401
+ *               code: 11017
  */
 router.post("/github", tryCatch(githubAuth));
 
 export default router;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AuthResponse:
+ *       type: object
+ *       description: Response returned after successful authentication
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Success message
+ *           example: Login successful
+ *         accessToken:
+ *           type: string
+ *           description: JWT access token for authenticated requests
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *         user:
+ *           $ref: '#/components/schemas/User'
+ */
