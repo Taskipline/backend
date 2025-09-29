@@ -61,7 +61,7 @@ const userSchema = new Schema<IUser>(
     },
     enableAIFeatures: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     googleId: {
       type: String,
